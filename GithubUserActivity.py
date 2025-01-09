@@ -12,6 +12,11 @@ def fetch_user_activity(username):
         with urllib.request.urlopen(url) as response:
             if response.status == 200:
                 return json.load(response)
+            # Rate limit exceeded, as github gives access to 60 calls for non connected users
+            elif response.status == 403:
+                print("Error: API rate limit exceeded.")
+                reset_time = response.headers.get('X-RateLimit-Reset')
+                print(f"Rate limit will reset at: {reset_time}")
     # Error handling based on response
     except urllib.error.HTTPError as e:
         print(f"Error: {e.reason}")
